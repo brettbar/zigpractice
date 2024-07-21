@@ -1,6 +1,7 @@
 const rl = @import("raylib");
 const std = @import("std");
-const irongui = @import("./irongui.zig");
+const el = @import("./elements.zig");
+const irongui = @import("./forge.zig");
 
 pub fn main() anyerror!void {
     // Initialization
@@ -14,21 +15,14 @@ pub fn main() anyerror!void {
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
-    const elem = irongui.Element{
-        .id = 0,
-        .background = rl.Color.purple,
-        // .t = irongui.Union{
-        //     .grid = irongui.Grid{
-        //         .w = 0,
-        //         .h = 0,
-        //     },
-        // },
-        .t = irongui.Union{
-            .text = irongui.Text{
-                .text = "Press",
-            },
-        },
-    };
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+
+    const allocator = gpa.allocator();
+    var f: irongui.Forge = irongui.Forge.init(allocator);
+    defer {
+        f.deinit();
+        _ = gpa.deinit();
+    }
 
     // Main game loop
     while (!rl.windowShouldClose()) { // Detect window close button or ESC key
@@ -36,21 +30,29 @@ pub fn main() anyerror!void {
         //----------------------------------------------------------------------------------
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
-        const first: []const u8 = "Example:";
-        const num_as_str = std.fmt.comptimePrint("{s} {d}", .{ first, elem.id });
+        // const first: []const u8 = "Example:";
+        // const num_as_str = std.fmt.comptimePrint("{s} {d}", .{ first, elem.id });
+        // const final = @as([*:0]const u8, @ptrCast(num_as_str));
 
-        const final = @as([*:0]const u8, @ptrCast(num_as_str));
+        const width = @as(f32, @floatFromInt(rl.getScreenWidth()));
+        const height = @as(f32, @floatFromInt(rl.getScreenHeight()));
+        const root_r = rl.Rectangle{ .x = 0, .y = 0, .width = width, .height = height };
+        const grid = try f.grid(root_r, 3, 3);
+        const col1 = grid.t.grid.col(grid, 0);
 
+        try f.text_label(col1, "ABC");
+
+        defer f.clear();
         // Draw
         //----------------------------------------------------------------------------------
         rl.beginDrawing();
         defer rl.endDrawing();
 
-        rl.clearBackground(rl.Color.white);
+        rl.clearBackground(rl.Color.gray);
 
-        rl.drawText(final, 190, 200, 20, rl.Color.light_gray);
+        f.draw();
 
-        elem.draw();
+        rl.drawFPS(0, 0);
         //----------------------------------------------------------------------------------
     }
 }
