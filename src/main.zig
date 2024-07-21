@@ -36,9 +36,11 @@ pub fn main() anyerror!void {
 
         const width = @as(f32, @floatFromInt(rl.getScreenWidth()));
         const height = @as(f32, @floatFromInt(rl.getScreenHeight()));
-        const root_r = rl.Rectangle{ .x = 0, .y = 0, .width = width, .height = height };
-        const grid = try f.grid(root_r, 3, 3);
-        const col1 = grid.t.grid.col(grid, 0);
+        const root_r: rl.Rectangle = .{ .x = 0, .y = 0, .width = width, .height = height };
+
+        const grid_e = try f.grid(root_r, 3, 3);
+        const grid = try grid_e.grid();
+        const col1 = grid.slot(grid_e, 4);
 
         try f.text_label(col1, "ABC");
 
@@ -52,7 +54,7 @@ pub fn main() anyerror!void {
 
         f.draw();
 
-        rl.drawFPS(0, 0);
+        //rl.drawFPS(0, 0);
         //----------------------------------------------------------------------------------
     }
 }

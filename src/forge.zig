@@ -4,29 +4,7 @@ const std = @import("std");
 
 pub const Forge = struct {
     stack: std.ArrayList(el.Element),
-    // bool TextButton( rect t, str txt, Color c = { 0, 0, 0, 0 }, f32 s = 1.0f ) {
-    //   auto e = TextLabel( t, txt, c, s );
-    //   e->interactable = true;
-    //   return CheckInteract( *e );
-    // }
-    // Element *Grid(
-    //   rect t,
-    //   u32 c,
-    //   u32 r,
-    //   Color color = { 0, 0, 0, 0 },
-    //   f32 s = 1.0f
-    // ) {
-    //   auto e = new Element();
-    //   e->type = Type::Grid;
-    //   e->id = queue.size();
-    //   e->background = BLUE;
-    //   e->transform = t;
-    //   e->scale = s;
-    //   e->background = color;
-    //   e->t.grid = new IGrid( c, r );
-    //   queue.push_back( e );
-    //   return e;
-    // }
+
     pub fn init(alloc: std.mem.Allocator) Forge {
         return Forge{ .stack = std.ArrayList(el.Element).init(alloc) };
     }
@@ -43,7 +21,7 @@ pub const Forge = struct {
         const element = el.Element{
             .id = 0,
             .transform = t,
-            .background = rl.Color.white,
+            .background = rl.colorAlpha(rl.Color.black, 0.0),
             .t = el.Union{
                 .grid = el.Grid{
                     .cols = cols,
@@ -61,7 +39,7 @@ pub const Forge = struct {
         const element = el.Element{
             .id = 0,
             .transform = t,
-            .background = rl.Color.purple,
+            .background = rl.Color.black,
             .t = el.Union{
                 .text = el.Text{
                     .text = txt,
